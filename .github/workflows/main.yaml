@@ -1,0 +1,19 @@
+name: Main Workflow
+on:
+  push:
+    branchs:
+      - test
+jobs:
+  example:
+    runs-on: ubuntu-18.04
+    steps:
+      - id: cache-flutter
+        uses: actions/cache@v1
+        with:
+          path: /tmp/flutter.tar.xz
+          key: v1-${{ runner.os }}-1.17.0-dev.3.1-beta
+      - if: steps.cache-flutter.outputs.cache-hit != 'true'
+        run: curl -o /tmp/flutter.tar.xz https://storage.googleapis.com/flutter_infra/releases/beta/linux/flutter_linux_1.17.0-dev.3.1-beta.tar.xz
+      - run: tar xvf /tmp/flutter.tar.xz -C /tmp
+      - run: echo "::add-path::/tmp/flutter/bin"
+      - run: flutter doctor -v
